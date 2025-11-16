@@ -21,15 +21,22 @@ A Python library for interacting with the OMDB (Open Movie Database) API. Search
 
 ## Installation
 
+### From Source
+
 1. Clone this repository:
    ```bash
-   git clone <repository-url>
-   cd omdb-api
+   git clone https://github.com/stevenaubertin/omdb-api-python-wrapper
+   cd omdb-api-python-wrapper
    ```
 
-2. Install dependencies:
+2. Install the package:
    ```bash
-   pip install requests python-dotenv
+   pip install -e .
+   ```
+
+   Or install dependencies only:
+   ```bash
+   pip install -r requirements.txt
    ```
 
 3. Create a `.env` file in the project root with your OMDB API key:
@@ -38,6 +45,15 @@ A Python library for interacting with the OMDB (Open Movie Database) API. Search
    ```
 
    Get a free API key at [http://www.omdbapi.com/apikey.aspx](http://www.omdbapi.com/apikey.aspx)
+
+### For Development
+
+Install with development dependencies:
+```bash
+pip install -e ".[dev]"
+# Or
+pip install -r requirements-dev.txt
+```
 
 ## Usage
 
@@ -63,21 +79,29 @@ if results.get('Response') == 'True':
 
 ### Command Line Interface
 
+After installing the package, you can use the `omdb-search` command:
+
 ```bash
 # Search by title
-python omdb-api/movie_search.py --search "The Matrix" --year 1999
+omdb-search --search "The Matrix" --year 1999
 
 # Get movie by IMDb ID
-python omdb-api/movie_search.py --id tt0133093
+omdb-search --id tt0133093
 
 # Search with filters
-python omdb-api/movie_search.py --search "Batman" --type movie --year 2008
+omdb-search --search "Batman" --type movie --year 2008
 
 # Get full plot
-python omdb-api/movie_search.py --id tt0133093 --plot full
+omdb-search --id tt0133093 --plot full
 
 # Legacy mode (simple title search)
-python omdb-api/movie_search.py "The Matrix" 1999
+omdb-search "The Matrix" 1999
+```
+
+Or run the module directly:
+
+```bash
+python -m omdb_api.movie_search --search "The Matrix"
 ```
 
 ### Example Response
@@ -183,14 +207,27 @@ if results.get('Response') == 'True':
 ## Project Structure
 
 ```
-omdb-api/
-├── omdb-api/
-│   ├── movie_search.py    # Main OMDB API wrapper
-│   └── example.py          # Simple usage example
-├── .env.example           # Environment variable template
-├── .env                   # Your API key (create this, not tracked by git)
-├── .gitignore            # Git ignore rules
-└── README.md             # This file
+omdb-api-python-wrapper/
+├── omdb_api/               # Main package
+│   ├── __init__.py         # Package initialization
+│   ├── movie_search.py     # Primary OMDB API wrapper
+│   ├── example.py          # Simple usage example
+│   └── result-example.json # Sample API response
+├── tests/                  # Test suite
+│   ├── __init__.py
+│   ├── test_movie_search.py
+│   └── test_example.py
+├── .env.example            # Environment variable template
+├── .env                    # Your API key (create this, not tracked by git)
+├── .flake8                 # Flake8 configuration
+├── .gitignore              # Git ignore rules
+├── CLAUDE.md               # AI assistant development guide
+├── README.md               # This file
+├── pytest.ini              # Pytest configuration
+├── pyproject.toml          # Modern Python project configuration
+├── requirements.txt        # Production dependencies
+├── requirements-dev.txt    # Development dependencies
+└── setup.py                # Package installation configuration
 ```
 
 ## Troubleshooting
@@ -220,6 +257,59 @@ pip install requests python-dotenv
 ## OMDB API Limits
 
 The free OMDB API key has a daily limit of 1,000 requests. For higher limits, consider upgrading at [omdbapi.com](http://www.omdbapi.com/).
+
+## Development
+
+### Running Tests
+
+The project includes a comprehensive test suite using pytest:
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage report
+pytest --cov=omdb_api --cov-report=html
+
+# Run specific test file
+pytest tests/test_movie_search.py
+
+# Run specific test
+pytest tests/test_movie_search.py::TestGetMovieByIdOrTitle::test_get_movie_by_title
+```
+
+### Code Quality
+
+Format code with Black:
+```bash
+black omdb_api tests
+```
+
+Check code style with Flake8:
+```bash
+flake8 omdb_api tests
+```
+
+Type checking with mypy:
+```bash
+mypy omdb_api
+```
+
+Sort imports with isort:
+```bash
+isort omdb_api tests
+```
+
+### Running All Checks
+
+```bash
+# Format and check code
+black omdb_api tests
+isort omdb_api tests
+flake8 omdb_api tests
+mypy omdb_api
+pytest
+```
 
 ## Contributing
 
